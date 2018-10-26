@@ -6,7 +6,7 @@ The API consist of some REST methods in order to provide functionality for sever
 
 
 ## 2. Run the server
-You just need to execute the python file.
+You just need to execute the python file indicating the path of the engine to be used in the api.
 ```python
   restapi.py rybka.exe
 ````
