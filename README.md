@@ -2,6 +2,14 @@
 Global Chess is a REST API to play chess.
 
 The API consist of some REST methods in order to provide functionality for several games.
+## 1. Requirements
+
+
+## 2. Run the server
+You just need to execute the python file.
+```python
+  restapi.py rybka.exe
+````
 
 ## 1. Start playing
 In order to start a new game you have 2 options, ask for the CPU move or do your own move.
