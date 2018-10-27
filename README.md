@@ -51,7 +51,9 @@ HTTP RESPONSE: 201
 ## 4. Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
 GET /game/<__game id__>/board    
+```
 HTTP RESPONSE: 200
 {
   "Board": "r n b q k b n r\np p p p p p p p\n. . . . . . . .\n. . . . . . . .\n. . . . . . . .\n. . . . . . . .\nP P P P P P P P\nR N B Q K B N R"
 }
+```
