@@ -2,7 +2,6 @@ import chess
 import chess.uci
 import json
 import os.path
-import sys
 
 from flask import Flask
 from flask import request
@@ -45,7 +44,7 @@ def save_board_into_storage(game, board):
     game_file.close()
 
 @app.route('/game/<game>/board/moves/best',  methods = ['POST'])
-def best_move(game, board):
+def best_move(game):
     board_game = get_board(game)
     engine.position(board_game)
 
@@ -59,9 +58,9 @@ def best_move(game, board):
 
     save_board_into_storage(game, board_game)
 
-    response = json.dumps({"Game": game, "Move" : resultMove})
+    response = json.dumps({"Game": game, "Move" : resultMove}), 201, {'ContentType':'application/json'}
 
-    return response
+    return response, created
 
 
 def get_best_move(command):
@@ -72,12 +71,13 @@ def get_best_move(command):
 
 @app.route('/game/<game>/board/move',  methods = ['POST'])
 def do_move(game):
-    board = get_board(game)
-    move = json.loads(request.data)['move']
-    board.push(chess.Move.from_uci(move))
-    engine.position(board)
+    board_game = get_board(game)
 
-    return json.dumps({"Move" : move})
+    move = json.loads(request.data)['move']
+    board_game.push(chess.Move.from_uci(move))
+    engine.position(board_game)
+
+    return json.dumps({"Move" : move}), 201, {'ContentType':'application/json'}
 
 @app.route('/game/<game>/board', methods = ['GET'])
 def get_board_position(game):
@@ -89,4 +89,5 @@ def get_board_position(game):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
