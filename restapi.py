@@ -87,6 +87,14 @@ def get_board_position(game):
     raw_board = str(boards[game])
     return json.dumps({"Board": raw_board})
 
+@app.route('/game/<game>/board/fen', methods = ['GET'])
+def get_fen_board_position(game):
+    board_game = get_board(game)
+    engine.position(board_game)
+
+    fen_board = str(board_game.fen())
+    return json.dumps({"Board": fen_board})
+
 if __name__ == '__main__':
     app.run(debug=True)
 
