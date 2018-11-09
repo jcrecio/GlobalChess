@@ -52,6 +52,21 @@ HTTP RESPONSE: 201
 }
 ```
 
+### 3.3 Undo move
+```javascript
+POST /game/<__game id__>/board/undo    
+```
+It will undo the last move on the game. The moves' stack only includes the moves played during a session.
+If you stopped playing a game and restarted lest´s day, next day, the stack will be empty.
+
+The output of the method contains the current position after having applied the undo.
+```json
+HTTP RESPONSE: 201
+{
+  "PreviousPosition": "8/p1pk1ppp/4p3/N2rPb2/2p5/b1P1B3/P4PPP/4r1K1 w - - 0 24"
+}
+```
+
 ## 4. Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
 ```javascript
