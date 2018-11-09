@@ -19,7 +19,9 @@ All the moves follow the UCI chess format.
 [UCI Protocol Specification](http://wbec-ridderkerk.nl/html/UCIProtocol.html)  
 
 ### 3.1 CPU move
+```javascript
 POST /game/<__game id__>/board/moves/best    
+```
 It will apply and return the best CPU move for the game specified. If the game does not exist yet, it will create a new one with the first move done by the CPU.  
 There is no required information to be sent via POST, the CPU will change the state of the game directly with the best move it finds.  
   
@@ -32,7 +34,9 @@ HTTP RESPONSE: 201
 ```
  
 ### 3.2 Player move
+```javascript
 POST /game/<__game id__>/board/move    
+```
 It will apply the move done by the user. If the game does not exist yet, it will create a new one with the first move done by the user.  
 The body request looks like:
 ```json
@@ -50,10 +54,24 @@ HTTP RESPONSE: 201
 
 ## 4. Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
+```javascript
 GET /game/<__game id__>/board    
+```
 ```
 HTTP RESPONSE: 200
 {
   "Board": "r n b q k b n r\np p p p p p p p\n. . . . . . . .\n. . . . . . . .\n. . . . . . . .\n. . . . . . . .\nP P P P P P P P\nR N B Q K B N R"
+}
+```
+
+## 5. Retrieve all the existing games
+You can get all the games
+```javascript
+GET /games   
+```
+```
+HTTP RESPONSE: 200
+{
+  "Games": ["gameid1", ..., "gameid_N"]
 }
 ```
