@@ -5,10 +5,13 @@ import os.path
 
 from flask import Flask
 from flask import request
-from Model.move_dto import MoveDto
+from flask_cors import CORS, cross_origin
+from os import listdir
+from os.path import isfile, join
+from pathlib import Path
 
 app = Flask(__name__)
-
+CORS(app)
 boards = {}
 
 def get_file_name(game):
@@ -19,7 +22,7 @@ def get_raw_board(game):
     return file.read()
 
 def setup_engine():
-    eng = chess.uci.popen_engine(sys.argv[0])
+    eng = chess.uci.popen_engine("C:\ChessEngines\Rybka\Rybkav2.3.2a.mp.w32.exe")
     eng.uci()
     return eng
 
@@ -60,7 +63,7 @@ def best_move(game):
 
     response = json.dumps({"Game": game, "Move" : resultMove}), 201, {'ContentType':'application/json'}
 
-    return response, created
+    return response
 
 
 def get_best_move(command):
@@ -87,6 +90,7 @@ def get_board_position(game):
     raw_board = str(boards[game])
     return json.dumps({"Board": raw_board})
 
+
 @app.route('/game/<game>/board/fen', methods = ['GET'])
 def get_fen_board_position(game):
     board_game = get_board(game)
@@ -95,7 +99,21 @@ def get_fen_board_position(game):
     fen_board = str(board_game.fen())
     return json.dumps({"Board": fen_board})
 
+def remove_extension(file):
+    return Path(file).stem
+
+def get_games_store():
+    list = []
+    games = [f for f in listdir("games") if isfile(join("games", f))]
+    for game in games:
+        list.append(remove_extension(game))
+    return list
+
+@app.route('/games', methods = ['GET'])
+def get_all_games():
+    games = get_games_store()
+    return json.dumps({"Games": games})
+
 if __name__ == '__main__':
     app.run(debug=True)
-
 
