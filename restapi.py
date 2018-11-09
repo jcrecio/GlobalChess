@@ -82,6 +82,15 @@ def do_move(game):
 
     return json.dumps({"Move" : move}), 201, {'ContentType':'application/json'}
 
+@app.route('/game/<game>/board/undo', methods = ['POST'])
+def undo_move(game):
+    board_game = get_board(game)
+    board_game.pop()
+
+    fen_board = str(board_game.fen())
+
+    return json.dumps({"PreviousPosition": fen_board}), 201, {'ContentType': 'application/json'}
+
 @app.route('/game/<game>/board', methods = ['GET'])
 def get_board_position(game):
     board_game = get_board(game)
