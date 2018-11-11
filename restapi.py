@@ -22,10 +22,10 @@ def get_raw_board(game):
     raw_game = games.find_one({"gameId": game})
     if(raw_game == None): return None
 
-    return raw_game.board
+    return raw_game['board']
 
 def setup_engine():
-    eng = chess.uci.popen_engine("C:\ChessEngines\Rybka\Rybkav2.3.2a.mp.w32.exe")
+    eng = chess.uci.popen_engine(sys.argv[0])
     eng.uci()
 
     return eng
@@ -112,15 +112,9 @@ def get_fen_board_position(game):
     fen_board = str(board_game.fen())
     return json.dumps({"Board": fen_board})
 
-def remove_extension(file):
-    return Path(file).stem
-
 def get_games_store():
-    list = []
-    games_list = list(games.find())
-    for game in games:
-        list.append(game.gameId)
-    return list
+    games_list = [game['gameId'] for game in list(games.find())]
+    return games_list
 
 @app.route('/games', methods = ['GET'])
 def get_all_games():
