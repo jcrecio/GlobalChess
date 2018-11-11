@@ -3,8 +3,13 @@ Global Chess is a REST API to play chess.
 
 The API consist of some REST methods in order to provide functionality for several games.
 ## 1. Requirements
-Install python-chess library. This is the chess library core the api uses underneath.  
-Install Flask for supporting REST implementation.  
+Having python installed in the system.
+Having mongo installed in the system.
+Install python-chess library. This is the chess library core the api uses underneath.
+Install Flask for supporting REST implementation. 
+Install PyMongo to handle mongo via python.
+
+> Pending Dockerize to automate all the steps for the installation, build and deployment
 
 ## 2. Run the server
 You just need to execute the python file indicating the path of the engine to be used in the api.
