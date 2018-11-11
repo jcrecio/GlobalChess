@@ -2,28 +2,32 @@ import chess
 import chess.uci
 import json
 import os.path
+import pymongo
 
+from pymongo import MongoClient
 from flask import Flask
 from flask import request
 from flask_cors import CORS, cross_origin
-from os import listdir
-from os.path import isfile, join
-from pathlib import Path
 
 app = Flask(__name__)
 CORS(app)
+
+db_client = MongoClient()
+database = db_client.games_db
+games = database.games
+
 boards = {}
 
-def get_file_name(game):
-    return "games/" + game + ".txt"
-
 def get_raw_board(game):
-    file = open(get_file_name(game), "r")
-    return file.read()
+    raw_game = games.find_one({"gameId": game})
+    if(raw_game == None): return None
+
+    return raw_game.board
 
 def setup_engine():
     eng = chess.uci.popen_engine("C:\ChessEngines\Rybka\Rybkav2.3.2a.mp.w32.exe")
     eng.uci()
+
     return eng
 
 engine = setup_engine()
@@ -33,18 +37,17 @@ def get_board(game):
     if (board != None):
         return board
 
-    if (os.path.isfile(get_file_name(game))):
-        boards[game] = chess.Board(get_raw_board(game))
-        return boards.get(game)
-    else:
+    raw_board = get_raw_board(game)
+    if (raw_board == None):
         boards[game] = chess.Board()
-        save_board_into_storage(game, boards[game])
-        return boards.get(game)
+        create_board_into_storage(game, boards[game])
+    else:
+        boards[game] = chess.Board(raw_board)
 
-def save_board_into_storage(game, board):
-    game_file = open(get_file_name(game), "w")
-    game_file.write(board.fen())
-    game_file.close()
+    return boards.get(game)
+
+def create_board_into_storage(game, board):
+    games.insert_one({"gameId": game, "board": board.fen()})
 
 @app.route('/game/<game>/board/moves/best',  methods = ['POST'])
 def best_move(game):
@@ -59,12 +62,14 @@ def best_move(game):
     board_game.push(chess.Move.from_uci(resultMove))
     engine.position(board_game)
 
-    save_board_into_storage(game, board_game)
+    update_board_into_storage(game, board_game)
 
     response = json.dumps({"Game": game, "Move" : resultMove}), 201, {'ContentType':'application/json'}
 
     return response
 
+def update_board_into_storage(game, board):
+    games.update({"gameId": game}, {"gameId": game, "board": board.fen()})
 
 def get_best_move(command):
     result = command.result()
@@ -99,7 +104,6 @@ def get_board_position(game):
     raw_board = str(boards[game])
     return json.dumps({"Board": raw_board})
 
-
 @app.route('/game/<game>/board/fen', methods = ['GET'])
 def get_fen_board_position(game):
     board_game = get_board(game)
@@ -113,9 +117,9 @@ def remove_extension(file):
 
 def get_games_store():
     list = []
-    games = [f for f in listdir("games") if isfile(join("games", f))]
+    games_list = list(games.find())
     for game in games:
-        list.append(remove_extension(game))
+        list.append(game.gameId)
     return list
 
 @app.route('/games', methods = ['GET'])
