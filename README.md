@@ -12,7 +12,12 @@ Install PyMongo to handle mongo via python.
 > Pending Dockerize to automate all the steps for the installation, build and deployment   
    
 ## 2. Run the server
-You just need to execute the python file indicating the path of the engine to be used in the api.
+The mongo server needs to be started off with the provide configuration file.      
+```python
+  mongod -f <path>/gamesdb.conf
+````
+
+You need to execute the python file indicating the path of the engine to be used in the api.
 ```python
   restapi.py rybka.exe
 ````
