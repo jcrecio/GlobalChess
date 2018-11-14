@@ -28,11 +28,26 @@ All the moves follow the UCI chess format.
 [UCI Wikipedia](https://en.wikipedia.org/wiki/Universal_Chess_Interface)  
 [UCI Protocol Specification](http://wbec-ridderkerk.nl/html/UCIProtocol.html)  
 
+### 3.0 Create new game
+```javascript
+POST /games/new      
+HEADERS:      
+  user: <user>
+```
+This operation creates a new game.
+
+```json
+HTTP RESPONSE: 201
+{
+  "GameId":  "GUID"
+}
+```
+
 ### 3.1 CPU move
 ```javascript
 POST /game/<__game id__>/board/moves/best    
 ```
-It will apply and return the best CPU move for the game specified. If the game does not exist yet, it will create a new one with the first move done by the CPU.  
+It will apply and return the best CPU move for the game specified, no matter the turn.
 There is no required information to be sent via POST, the CPU will change the state of the game directly with the best move it finds.  
   
 The output of the method is as follows:
@@ -77,6 +92,15 @@ HTTP RESPONSE: 201
 }
 ```
 
+### 3.4 Delete game
+In order to remove an existing game.      
+```javascript
+DELETE /game/<__game id__>/delete    
+```            
+```
+HTTP RESPONSE: 204
+No content
+```
 ## 4. Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
 ```javascript
