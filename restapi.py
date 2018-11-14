@@ -3,10 +3,12 @@ import chess.uci
 import json
 import os.path
 import pymongo
+
 from pymongo import MongoClient
 from flask import Flask
 from flask import request
 from flask_cors import CORS, cross_origin
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 CORS(app)
@@ -80,7 +82,7 @@ def best_move(game):
     return response
 
 def update_board_into_storage(gameId, userId, board):
-    games.update({"_id": gameId}, { '$set': { "board": board.fen() }})
+    games.update({"_id": ObjectId(gameId)}, { '$set': { "board": board.fen() }})
 
 def get_best_move(command):
     result = command.result()
@@ -114,7 +116,7 @@ def delete_game(game):
     return json.dumps({"Game": game}), 204, {'ContentType': 'application/json'}
 
 def delete_game_from_storage(game):
-    games.remove_one({"_id" : game})
+    games.remove({"_id" : ObjectId(game)})
 
 @app.route('/game/<game>/board', methods = ['GET'])
 def get_board_position(game):
