@@ -3,7 +3,6 @@ import chess.uci
 import json
 import os.path
 import pymongo
-
 from pymongo import MongoClient
 from flask import Flask
 from flask import request
@@ -46,11 +45,23 @@ def get_board(game):
 
     return boards.get(game)
 
-def create_board_into_storage(game, board):
-    games.insert_one({"gameId": game, "board": board.fen()})
+def create_board_into_storage(user, board):
+    result = games.insert_one({"userId": user, "board": board.fen()})
+    return str(result.inserted_id)
+
+@app.route('/games/new', methods = ['POST'])
+def new_game():
+    user = request.headers.get('user')
+
+    game_id = create_board_into_storage(user, chess.Board())
+    boards[game_id] = chess.Board()
+
+    return json.dumps({"GameId": game_id}), 201, {'ContentType': 'application/json'}
 
 @app.route('/game/<game>/board/moves/best',  methods = ['POST'])
 def best_move(game):
+    user = request.headers.get('user')
+
     board_game = get_board(game)
     engine.position(board_game)
 
@@ -62,14 +73,14 @@ def best_move(game):
     board_game.push(chess.Move.from_uci(resultMove))
     engine.position(board_game)
 
-    update_board_into_storage(game, board_game)
+    update_board_into_storage(game, user, board_game)
 
     response = json.dumps({"Game": game, "Move" : resultMove}), 201, {'ContentType':'application/json'}
 
     return response
 
-def update_board_into_storage(game, board):
-    games.update({"gameId": game}, {"gameId": game, "board": board.fen()})
+def update_board_into_storage(gameId, userId, board):
+    games.update({"_id": gameId}, { '$set': { "board": board.fen() }})
 
 def get_best_move(command):
     result = command.result()
@@ -96,6 +107,15 @@ def undo_move(game):
 
     return json.dumps({"PreviousPosition": fen_board}), 201, {'ContentType': 'application/json'}
 
+@app.route('/game/<game>/delete', methods = ['DELETE'])
+def delete_game(game):
+    delete_game_from_storage(game)
+
+    return json.dumps({"Game": game}), 204, {'ContentType': 'application/json'}
+
+def delete_game_from_storage(game):
+    games.remove_one({"_id" : game})
+
 @app.route('/game/<game>/board', methods = ['GET'])
 def get_board_position(game):
     board_game = get_board(game)
@@ -113,7 +133,7 @@ def get_fen_board_position(game):
     return json.dumps({"Board": fen_board})
 
 def get_games_store():
-    games_list = [game['gameId'] for game in list(games.find())]
+    games_list = [str(game['_id']) for game in list(games.find({}))]
     return games_list
 
 @app.route('/games', methods = ['GET'])
