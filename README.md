@@ -12,7 +12,7 @@ Install PyMongo to handle mongo via python.
 > Pending Dockerize to automate all the steps for the installation, build and deployment   
    
 ## 2. Run the server
-The mongo server needs to be started off with the provide configuration file.      
+The mongo server needs to be started off with the provided configuration file.      
 ```python
   mongod -f <path>/gamesdb.conf
 ````
