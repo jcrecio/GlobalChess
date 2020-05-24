@@ -1,5 +1,5 @@
 # jkChess-rest-api
-jkChess-rest-api is the REST API module built in Python that corresponds to the core functionality of [jkChess](https://github.com/jcrecio/jkChess/)
+jkChess-rest-api is the REST API module built in Python that corresponds to the core functionality of [jkChess](https://github.com/jcrecio/jkChess/)  
 This REST API needs a mongo server and chess engine to run. (See details in line 16 and 29 on app.py file)
 
 It normally runs as a part of the docker stack of [jkChess](https://github.com/jcrecio/jkChess/), in case you with to run it without docker you will need:
