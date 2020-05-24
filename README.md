@@ -14,24 +14,32 @@ To deploy your own jkChess you will need to have installed on your computer:
 
 ## 1. Installation and setup
 The entire project is based on docker, in order to run it, you only need to run the stack with:
- $ docker-compose -f docker-compose.yml up
+```
+$ docker-compose -f docker-compose.yml up
+```
 
 If you wish to run it within a swarm you can simply run:
+```
 $ docker stack deploy --compose-file docker-compose.yml jkchess
+```
    
 The images might be built diretly using Dockerfiles, but the project is intended to separate both angular ui and rest api in a way that separate images might be used in other places.
 
 ### Image of the Python REST API
 If you want to modify and try new things on your own, you can recreate images in your own dockerhub by running these commands cloning the rest api repository [jkChess-rest-api](https://github.com/jcrecio/jkChess-rest-api)
+```
 docker build -t <your rest api python image path>:latest -f ./Dockerfile .
 docker push <your rest api python image path>:latest
-Then replace in the docker-compose.yml the image jcrecio/jkchess-restapi:latest by your own image.
+```
+Then replace in the *docker-compose.yml* the image *jcrecio/jkchess-restapi:latest* by your own image.
 
 ### Image of the Angular Client
 If you want to modify and try new things on your own, you can recreate images in your own dockerhub by running these commands cloning the angular ui client repository [ngJkChess](https://github.com/jcrecio/ngJkChess):
+```
 docker build -t <your angular image path>:latest -f ./Dockerfile .
 docker push <your angular image path>:latest
-Then replace in the docker-compose.yml in this same directory, the image jcrecio/jkchess-restapi:latest by your own image.
+```
+Then replace in the *docker-compose.yml* in this same directory, the image *jcrecio/jkchess-restapi:latest* by your own image.
 
 As of now, the chess API depends on the engine rybka.exe to play.
 The core is based on python-chess to translate moves to UCI:
