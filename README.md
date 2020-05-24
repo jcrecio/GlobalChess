@@ -1,34 +1,49 @@
-# GlobalChess
-Global Chess is a REST API to play chess.
+# jkChess
+jkChess is a REST API to play easly chess. It´s built on Python.
 
-The API consist of some REST methods in order to provide functionality for several games.
-## 1. Requirements   
-Having python installed in the system.   
-Having mongo installed in the system.   
-Install python-chess library. This is the chess library core the api uses underneath.   
-Install Flask for supporting REST implementation.    
-Install PyMongo to handle mongo via python.   
+The API consist of some REST methods in order to provide functionality to play several games simultaneously.
+There is also an Angular 9 client which consumes the REST API and provides a graphical interface to play.
+
+The project consist of three main modules, MongoDb as database for all chess data and games, Python REST API to play chess via HTTP and Angular 9 for the graphical client interface.
+
+## 0. Requirements
+To deploy your own jkChess you will need to have installed on your computer:
+- Docker
+- Docker compose
+- (Optional) Docker swarm
+
+## 1. Installation and setup
+The entire project is based on docker, in order to run it, you only need to run the stack with:
+ $ docker-compose -f docker-compose.yml up
+
+If you wish to run it within a swarm you can simply run:
+$ docker stack deploy --compose-file docker-compose.yml jkchess
    
-> Pending Dockerize to automate all the steps for the installation, build and deployment   
-   
-## 2. Run the server
-The mongo server needs to be started off with the provided configuration file.      
-```python
-  mongod -f <path>/gamesdb.conf
-````
+The images might be built diretly using Dockerfiles, but the project is intended to separate both angular ui and rest api in a way that separate images might be used in other places.
 
-You need to execute the python file indicating the path of the engine to be used in the api.
-```python
-  restapi.py rybka.exe
-````
+### Image of the Python REST API
+If you want to modify and try new things on your own, you can recreate images in your own dockerhub by running these commands cloning the rest api repository [jkChess-rest-api](https://github.com/jcrecio/jkChess-rest-api)
+docker build -t <your rest api python image path>:latest -f ./Dockerfile .
+docker push <your rest api python image path>:latest
+Then replace in the docker-compose.yml the image jcrecio/jkchess-restapi:latest by your own image.
 
-## 3. Start playing
+### Image of the Angular Client
+If you want to modify and try new things on your own, you can recreate images in your own dockerhub by running these commands cloning the angular ui client repository [ngJkChess](https://github.com/jcrecio/ngJkChess):
+docker build -t <your angular image path>:latest -f ./Dockerfile .
+docker push <your angular image path>:latest
+Then replace in the docker-compose.yml in this same directory, the image jcrecio/jkchess-restapi:latest by your own image.
+
+As of now, the chess API depends on the engine rybka.exe to play.
+The core is based on python-chess to translate moves to UCI:
+[Python-chess library documentation](https://python-chess.readthedocs.io/en/latest/)
+
+## 2. Start playing
 In order to start a new game you have 2 options, ask for the CPU move or do your own move.
 All the moves follow the UCI chess format.  
 [UCI Wikipedia](https://en.wikipedia.org/wiki/Universal_Chess_Interface)  
 [UCI Protocol Specification](http://wbec-ridderkerk.nl/html/UCIProtocol.html)  
 
-### 3.0 Create new game
+### Create new game
 ```javascript
 POST /games/new      
 HEADERS:      
@@ -43,7 +58,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.1 CPU move
+### CPU move
 ```javascript
 POST /game/<__game id__>/board/moves/best    
 ```
@@ -58,7 +73,7 @@ HTTP RESPONSE: 201
 }
 ```
  
-### 3.2 Player move
+### Player move
 ```javascript
 POST /game/<__game id__>/board/move    
 ```
@@ -77,7 +92,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.3 Undo move
+### Undo move
 ```javascript
 POST /game/<__game id__>/board/undo    
 ```
@@ -92,7 +107,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.4 Delete game
+### Delete game
 In order to remove an existing game.      
 ```javascript
 DELETE /game/<__game id__>/delete    
@@ -101,7 +116,7 @@ DELETE /game/<__game id__>/delete
 HTTP RESPONSE: 204
 No content
 ```
-## 4. Display data
+## Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
 ```javascript
 GET /game/<__game id__>/board    
@@ -113,7 +128,7 @@ HTTP RESPONSE: 200
 }
 ```
 
-## 5. Retrieve all the existing games
+## Retrieve all the existing games
 You can get all the games
 ```javascript
 GET /games   
