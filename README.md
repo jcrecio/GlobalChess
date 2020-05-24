@@ -1,34 +1,33 @@
-# GlobalChess
-Global Chess is a REST API to play chess.
+# jkChess-rest-api
+jkChess-rest-api is the REST API module built in Python that corresponds to the core functionality of [jkChess](https://github.com/jcrecio/jkChess/)
+This REST API needs a mongo server and chess engine to run. (See details in line 16 and 29 on app.py file)
 
-The API consist of some REST methods in order to provide functionality for several games.
-## 1. Requirements   
-Having python installed in the system.   
-Having mongo installed in the system.   
-Install python-chess library. This is the chess library core the api uses underneath.   
-Install Flask for supporting REST implementation.    
-Install PyMongo to handle mongo via python.   
-   
-> Pending Dockerize to automate all the steps for the installation, build and deployment   
-   
-## 2. Run the server
+It normally runs as a part of the docker stack of [jkChess](https://github.com/jcrecio/jkChess/), in case you with to run it without docker you will need:
+1. Python installed in the system.
+2. Mongo installed in the system.
+3. All the dependencies included in requirements.txt
+
+## 2. Run the mongodb server without docker
 The mongo server needs to be started off with the provided configuration file.      
 ```python
   mongod -f <path>/gamesdb.conf
 ````
 
-You need to execute the python file indicating the path of the engine to be used in the api.
+You need to execute the python file indicating the path of the engine to be used in the api, if you do not specify any, it will use by default stockfish.
 ```python
-  restapi.py rybka.exe
+  api.py /usr/bin/shredder
+````
+```python
+  api.py /usr/bin/stockfish
 ````
 
-## 3. Start playing
+## 2. Start playing
 In order to start a new game you have 2 options, ask for the CPU move or do your own move.
 All the moves follow the UCI chess format.  
 [UCI Wikipedia](https://en.wikipedia.org/wiki/Universal_Chess_Interface)  
 [UCI Protocol Specification](http://wbec-ridderkerk.nl/html/UCIProtocol.html)  
 
-### 3.0 Create new game
+### Create new game
 ```javascript
 POST /games/new      
 HEADERS:      
@@ -43,7 +42,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.1 CPU move
+### CPU move
 ```javascript
 POST /game/<__game id__>/board/moves/best    
 ```
@@ -58,7 +57,7 @@ HTTP RESPONSE: 201
 }
 ```
  
-### 3.2 Player move
+### Player move
 ```javascript
 POST /game/<__game id__>/board/move    
 ```
@@ -77,7 +76,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.3 Undo move
+### Undo move
 ```javascript
 POST /game/<__game id__>/board/undo    
 ```
@@ -92,7 +91,7 @@ HTTP RESPONSE: 201
 }
 ```
 
-### 3.4 Delete game
+### Delete game
 In order to remove an existing game.      
 ```javascript
 DELETE /game/<__game id__>/delete    
@@ -101,7 +100,7 @@ DELETE /game/<__game id__>/delete
 HTTP RESPONSE: 204
 No content
 ```
-## 4. Display data
+## Display data
 You can get the raw current position (8x8 squares matrix) of a game requesting via GET:  
 ```javascript
 GET /game/<__game id__>/board    
@@ -113,7 +112,7 @@ HTTP RESPONSE: 200
 }
 ```
 
-## 5. Retrieve all the existing games
+## Retrieve all the existing games
 You can get all the games
 ```javascript
 GET /games   

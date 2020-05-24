@@ -1,5 +1,7 @@
 import chess
-import chess.uci
+import chess.engine
+
+import sys
 import json
 import os.path
 import pymongo
@@ -26,10 +28,11 @@ def get_raw_board(game):
     return raw_game['board']
 
 def setup_engine():
-    eng = chess.uci.popen_engine(sys.argv[0])
-    eng.uci()
+    enginePath = "engine/stockfish"
+    if len(sys.argv) > 0:
+        enginePath = sys.argv[0]
 
-    return eng
+    return chess.engine.SimpleEngine.popen_uci(enginePath)
 
 engine = setup_engine()
 

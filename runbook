@@ -1,0 +1,2 @@
+docker build -t jcrecio/jkchess-rest-api:latest -f ./Dockerfile .
+docker push jcrecio/jkchess-rest-api:latest
